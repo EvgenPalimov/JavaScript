@@ -22,8 +22,8 @@ class Food {
      * поле.
      */
     setNewFood() {
-        const food = this.generateRandomCoordinates();
-        this.board.renderFood(food);
+        const coords = this.generateRandomCoordinates();
+        this.board.renderFood(coords);
     }
 
     /**
@@ -41,10 +41,13 @@ class Food {
      */
     generateRandomCoordinates() {
         while (true) {
-            this.x = Math.floor(Math.random() * this.settings.colsCount) + 1;
-            this.y = Math.floor(Math.random() * this.settings.rowsCount) + 1;
+            this.x = Math.floor(Math.random() * this.settings.colsCount);
+            this.y = Math.floor(Math.random() * this.settings.rowsCount);
             let cell = this.board.getCellEl(this.x, this.y);
-            
+
+            if (cell === null) {
+                continue;
+            }
             if (cell.classList.contains('snakeBody')) {
                 continue;
             }

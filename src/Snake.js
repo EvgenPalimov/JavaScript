@@ -11,8 +11,15 @@ class Snake {
     }
 
     /**
+     * @param {Settings} settings настройки игры
+     */
+    init(settings) {
+        this.settings = settings;
+    }
+
+    /**
      * Меняем направление движения.
-     * @param {string} newDirection направление может быть down, up, left, right.
+     * @param {string} direction направление может быть down, up, left, right.
      * @throws {Error} при передаче не корректного направления выбрасывается ошибка.
      */
     changeDirection(newDirection) {
@@ -72,6 +79,24 @@ class Snake {
                 newHeadCoords.x++;
                 break;
         }
+
+        //если голова уходит за правый край
+        if (newHeadCoords.x > this.settings.colsCount) {
+            newHeadCoords.x = 1;
+        }
+        //если голова уходит за нижний край
+        if (newHeadCoords.y > this.settings.rowsCount) {
+            newHeadCoords.y = 1;
+        }
+        //если голова уходит за левый край
+        if (newHeadCoords.x == 0) {
+            newHeadCoords.x = this.settings.colsCount;
+        }
+        //если голова уходит за верхний край
+        if (newHeadCoords.y == 0) {
+            newHeadCoords.y = this.settings.rowsCount;
+        }
+
         this.body.unshift(newHeadCoords);
         this.body.pop();
     }

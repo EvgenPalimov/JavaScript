@@ -81,6 +81,9 @@ class Board {
     }
 
     /**
+     * @deprecated Метод больше не используется, т.к. теперь
+     * змейка может проходить через стены.
+     *
      * Является ли следующий шаг, шагом в стену.
      * @param {Object} nextCellCoords - координаты ячейки, куда змейка собирается сделать шаг.
      * @param {number} nextCellCoords.x
@@ -89,12 +92,15 @@ class Board {
      */
     isNextStepToWall(nextCellCoords) {
         let nextCell = this.getCellEl(nextCellCoords.x, nextCellCoords.y);
-        return nextCell === null;
+        if (nextCell === null) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * Метод рисует еду на игровом поле.
-     * @param {Food} coords будущее расположение еды на поле
+     * @param {Object} coords будущее расположение еды на поле
      * @param {number} coords.x координата x
      * @param {number} coords.y координата y
      */

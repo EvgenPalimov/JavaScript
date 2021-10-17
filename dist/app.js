@@ -186,14 +186,16 @@ class Game {
      * @param {Snake} snake
      * @param {Menu} menu
      * @param {Food} food
+     * @param {Score} score
      */
-    init(settings, status, board, snake, menu, food) {
+    init(settings, status, board, snake, menu, food, score) {
         this.settings = settings;
         this.status = status;
         this.board = board;
         this.snake = snake;
         this.menu = menu;
         this.food = food;
+        this.score = score;
     }
 
     /**
@@ -201,6 +203,7 @@ class Game {
      * "Пауза", а также на стрелки на клавиатуре.
      */
     run() {
+        this.score.setToWin(this.settings.winLength);
         this.menu.addButtonsClickListeners(this.start.bind(this), this.pause.bind(this));
         document.addEventListener('keydown', this.pressKeyHandler.bind(this));
     }
@@ -234,7 +237,8 @@ class Game {
      */
     doTick() {
         this.snake.performStep();
-        if (this.isGameLost()) {
+        this.score.setCurrent(this.snake.body.length);
+        if (this.isSnakeSteppedOntoItself()) {
             return;
         }
         if (this.isGameWon()) {
@@ -265,6 +269,26 @@ class Game {
     }
 
     /**
+     * Метод проверяет съела ли змейка сама себя.
+     * @returns {boolean}
+     */
+    isSnakeSteppedOntoItself() {
+        let cellArr = this.snake.body.map(function (cellCoords) {
+            return cellCoords.x.toString() + cellCoords.y.toString();
+        });
+        let head = cellArr.shift();
+        if (cellArr.includes(head)) {
+            clearInterval(this.tickIdentifier);
+            this.setMessage('Вы проиграли');
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @deprecated Метод больше не используется, т.к. теперь
+     * змейка может проходить через стены.
+     * 
      * Метод проверяет проиграна ли игра, останавливает игру
      * в случае проигрыша, выводит сообщение о проигрыше.
      * @returns {boolean} если мы шагнули в стену, тогда
@@ -317,11 +341,14 @@ window.addEventListener('load', () => {
     const menu = new Menu();
     const food = new Food();
     const game = new Game();
+    const score = new Score();
     
-    settings.init({ speed: 5, winLength: 5 });
+    settings.init({ speed: 5, winLength: 10 });
+    snake.init(settings);
     board.init(settings, snake);
     food.init(settings, snake, board);
-    game.init(settings, status, board, snake, menu, food);
+    game.init(settings, status, board, snake, menu, food, score);
+    score.init(settings);
 
     board.renderBoard();
     board.renderSnake(snake);
@@ -344,6 +371,36 @@ class Menu {
     addButtonsClickListeners(startBtnClickHandler, pauseBtnClickHandler) {
         this.startBtnEl.addEventListener('click', startBtnClickHandler);
         this.pauseBtnEl.addEventListener('click', pauseBtnClickHandler);
+    }
+}
+class Score {
+    constructor() {
+        this.currentEl = document.querySelector('.current');
+        this.toWinEl = document.querySelector('.toWin');
+    }
+
+    /**
+     * @param {Settings} settings настройки игры
+     */
+    init(settings) {
+        this.settings = settings;
+    }
+
+    /**
+     * Метод устанавливает текущий счет игрока.
+     * @param {string} text 
+     */
+    setCurrent(text) {
+        this.currentEl.textContent = text;
+    }
+
+    /**
+     * Метод устанавливает количество очков, необходимых
+     * для выигрыша.
+     * @param {string} text 
+     */
+    setToWin(text) {
+        this.toWinEl.textContent = text;
     }
 }
 class Settings {
@@ -391,6 +448,13 @@ class Snake {
         }];
 
         this.direction = 'down';
+    }
+
+    /**
+     * @param {Settings} settings настройки игры
+     */
+    init(settings) {
+        this.settings = settings;
     }
 
     /**
@@ -455,6 +519,24 @@ class Snake {
                 newHeadCoords.x++;
                 break;
         }
+
+        //если голова уходит за правый край
+        if (newHeadCoords.x > this.settings.colsCount) {
+            newHeadCoords.x = 1;
+        }
+        //если голова уходит за нижний край
+        if (newHeadCoords.y > this.settings.rowsCount) {
+            newHeadCoords.y = 1;
+        }
+        //если голова уходит за левый край
+        if (newHeadCoords.x == 0) {
+            newHeadCoords.x = this.settings.colsCount;
+        }
+        //если голова уходит за верхний край
+        if (newHeadCoords.y == 0) {
+            newHeadCoords.y = this.settings.rowsCount;
+        }
+
         this.body.unshift(newHeadCoords);
         this.body.pop();
     }
