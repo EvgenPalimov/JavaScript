@@ -8,28 +8,24 @@ class Settings {
      * @throws {Error} если переданы не верные настройки выбрасывается
      * соответствующая ошибка.
      */
-    init(params) {
-        let defaultParams = {rowsCount: 21, colsCount: 21, speed: 2, winLength: 50};
-        Object.assign(defaultParams, params);
+    init({rowsCount = 21, colsCount = 21, speed = 2, winLength = 50} = {}) {
 
-        if (defaultParams.rowsCount < 10 || defaultParams.rowsCount > 30) {
+        if (rowsCount < 10 || rowsCount > 30) {
             throw new Error('Неверные настройки, значение rowsCount должно быть в диапазоне [10, 30].');
         }
-        this.rowsCount = defaultParams.rowsCount;
-
-        if (defaultParams.colsCount < 10 || defaultParams.colsCount > 30) {
+        if (colsCount < 10 || colsCount > 30) {
             throw new Error('Неверные настройки, значение rowsCount должно быть в диапазоне [10, 30].');
         }
-        this.colsCount = defaultParams.colsCount;
-
-        if (defaultParams.speed < 1 || defaultParams.speed > 10) {
+        if (speed < 1 || speed > 10) {
             throw new Error('Неверные настройки, значение speed должно быть в диапазоне [1, 10].');
         }
-        this.speed = defaultParams.speed;
-
-        if (defaultParams.winLength < 5 || defaultParams.winLength > 50) {
+        if (winLength < 5 || winLength > 50) {
             throw new Error('Неверные настройки, значение winLength должно быть в диапазоне [5, 50].');
         }
-        this.winLength = defaultParams.winLength;
+
+        this.rowsCount = rowsCount;
+        this.colsCount = colsCount;
+        this.speed = speed;
+        this.winLength = winLength;
     }
 }

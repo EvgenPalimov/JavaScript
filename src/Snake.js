@@ -19,7 +19,7 @@ class Snake {
 
     /**
      * Меняем направление движения.
-     * @param {string} direction направление может быть down, up, left, right.
+     * @param {string} newDirection направление может быть down, up, left, right.
      * @throws {Error} при передаче не корректного направления выбрасывается ошибка.
      */
     changeDirection(newDirection) {
@@ -61,10 +61,7 @@ class Snake {
      */
     performStep() {
         let currentHeadCoords = this.body[0];
-        let newHeadCoords = {
-            x: currentHeadCoords.x,
-            y: currentHeadCoords.y,
-        };
+        let newHeadCoords = {...currentHeadCoords};
         switch (this.direction) {
             case "down":
                 newHeadCoords.y++;
@@ -110,10 +107,7 @@ class Snake {
      */
     increaseBody() {
         let bodyLastCell = this.body[this.body.length - 1];
-        let newBodyLastCell = {
-            x: bodyLastCell.x,
-            y: bodyLastCell.y,
-        };
+        let newBodyLastCell = {...bodyLastCell};
         this.body.push(newBodyLastCell);
     }
 }
